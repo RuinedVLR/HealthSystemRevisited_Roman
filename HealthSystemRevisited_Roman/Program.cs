@@ -59,9 +59,10 @@ namespace HealthSystemRevisited_Roman
 
     class Player
     {
-        public string Name { get; private set; }
+        public string Name { get; set; }
         public HealthSystem Health { get; private set; }
         public HealthSystem Shield { get; private set; }
+        public ConsoleColor statusColor { get; private set; }
 
         public void TakeDamage(int damage)
         {
@@ -81,23 +82,33 @@ namespace HealthSystemRevisited_Roman
         {
             if (Health.CurrentHealth == 100)
             {
+                statusColor = ConsoleColor.DarkGreen;
                 return($"{Name} is in perfect health!");
             }
-            else if (Health.CurrentHealth >= 70)
+            else if (Health.CurrentHealth >= 80)
             {
+                statusColor = ConsoleColor.Green;
                 return ($"{Name} has minor injuries.");
             }
-            else if (Health.CurrentHealth >= 40)
+            else if (Health.CurrentHealth >= 50)
             {
+                statusColor = ConsoleColor.Yellow;
+                return ($"{Name} is wounded.");
+            }
+            else if (Health.CurrentHealth >= 30)
+            {
+                statusColor = ConsoleColor.DarkYellow;
                 return ($"{Name} is seriously injured.");
             }
             else if (Health.CurrentHealth > 0)
             {
+                statusColor = ConsoleColor.Red;
                 return ($"{Name} is critically injured!");
             }
             else
             {
-                return ($"{Name} has fallen in battle.");
+                statusColor = ConsoleColor.DarkRed;
+                return ($"{Name} has fallen!");
             }
         }
 
@@ -114,6 +125,11 @@ namespace HealthSystemRevisited_Roman
         public string GetName()
         {
             return Name;
+        }
+
+        public ConsoleColor GetStatusColor()
+        {
+            return statusColor;
         }
 
         public Player(string name, int health, int shield)
@@ -151,6 +167,7 @@ namespace HealthSystemRevisited_Roman
         {
             Console.Write("Enter player name: ");
             name = Console.ReadLine();
+            player.Name = name;
             Console.Clear();
         }
 
@@ -195,9 +212,16 @@ namespace HealthSystemRevisited_Roman
 
             Console.Clear();
             Console.SetCursorPosition(0, 0);
-            Console.WriteLine("-------------------------");
+            Console.WriteLine("--------------------------------------------------");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($"          {player.GetName()}          ");
-            Console.WriteLine($"Health: {player.GetHealth()}   Shield: {player.GetShield()}   Status: {player.GetStatusString()}");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"Health: {player.GetHealth()}   ");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write($"Shield: {player.GetShield()}   ");
+            Console.ForegroundColor = player.GetStatusColor();
+            Console.Write($"Status: { player.GetStatusString()}");
+            Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine();
             Console.WriteLine("Press D key to Take Damage");
             Console.WriteLine("Press H key to Heal");
@@ -208,9 +232,9 @@ namespace HealthSystemRevisited_Roman
         {
             Console.Clear();
             Console.SetCursorPosition(0, 0);
-            Console.WriteLine("-------------------------");
+            Console.WriteLine("--------------------------------------------------");
             Console.WriteLine($"       {player.GetName()} has fallen!       ");
-            Console.WriteLine("       Game Over!       ");
+            Console.WriteLine("          Game Over!       ");
             Console.ReadKey(true);
         }
     }
