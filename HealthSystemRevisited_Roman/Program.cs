@@ -101,6 +101,21 @@ namespace HealthSystemRevisited_Roman
             }
         }
 
+        public int GetHealth()
+        {
+            return Health.CurrentHealth;
+        }
+
+        public int GetShield()
+        {
+            return Shield.CurrentHealth;
+        }
+
+        public string GetName()
+        {
+            return Name;
+        }
+
         public Player(string name, int health, int shield)
         {
             Name = name;
@@ -123,10 +138,12 @@ namespace HealthSystemRevisited_Roman
                 GetPlayerName();
             }
 
+            HUD();
+
             while (isPlaying)
             {
+                Input();
                 HUD();
-                if()
             }
         }
 
@@ -137,18 +154,63 @@ namespace HealthSystemRevisited_Roman
             Console.Clear();
         }
 
+        static void Input()
+        {
+            ConsoleKey key = Console.ReadKey(true).Key;
+
+            if(key == ConsoleKey.D)
+            {
+                int damage = rand.Next(5, 21);
+                player.TakeDamage(damage);
+                Console.WriteLine();
+                Console.WriteLine($"{player.GetName()} took {damage} damage");
+                Console.ReadKey(true);
+            }
+            else if(key == ConsoleKey.H)
+            {
+                int heal = rand.Next(5, 16);
+                player.Health.Heal(heal);
+                Console.WriteLine();
+                Console.WriteLine($"{player.GetName()} healed {heal} health");
+                Console.ReadKey(true);
+            }
+            else if(key == ConsoleKey.R)
+            {
+                player.Health.Reset();
+                player.Shield.Reset();
+                Console.WriteLine();
+                Console.WriteLine($"{player.GetName()}'s health and shield have been reset");
+                Console.ReadKey(true);
+            }
+        }
+
         static void HUD()
         {
+            if(player.Health.CurrentHealth <= 0)
+            {
+                isPlaying = false;
+                Defeat();
+                return;
+            }
+
             Console.Clear();
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("-------------------------");
-            Console.WriteLine($"          {player.Name}          ");
-            Console.WriteLine($"Health: {player.Health}   Shield: {player.Shield}   Status: {player.GetStatusString()}");
+            Console.WriteLine($"          {player.GetName()}          ");
+            Console.WriteLine($"Health: {player.GetHealth()}   Shield: {player.GetShield()}   Status: {player.GetStatusString()}");
             Console.WriteLine();
             Console.WriteLine("Press D key to Take Damage");
             Console.WriteLine("Press H key to Heal");
             Console.WriteLine("Press R key to Reset Health");
+        }
 
+        static void Defeat()
+        {
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
+            Console.WriteLine("-------------------------");
+            Console.WriteLine($"       {player.GetName()} has fallen!       ");
+            Console.WriteLine("       Game Over!       ");
             Console.ReadKey(true);
         }
     }
