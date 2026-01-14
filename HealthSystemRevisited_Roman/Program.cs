@@ -129,6 +129,7 @@ namespace HealthSystemRevisited_Roman
 
         public ConsoleColor GetStatusColor()
         {
+            GetStatusString();
             return statusColor;
         }
 
