@@ -6,158 +6,23 @@ using System.Threading.Tasks;
 
 namespace HealthSystemRevisited_Roman
 {
-    class HealthSystem
-    {
-        public int MaxHealth { get; private set; }
-        public int CurrentHealth { get; private set; }
-
-        public void TakeDamage(int damage)
-        {
-            if(damage < 0)
-            {
-                Console.WriteLine("Damage cannot be negative.");
-                return;
-            }
-
-            CurrentHealth -= damage;
-            if (CurrentHealth < 0)
-            {
-                CurrentHealth = 0;
-            }
-        }
-
-        public void Reset()
-        {
-            CurrentHealth = MaxHealth;
-        }
-
-        public void Heal(int hp)
-        {
-            if(hp < 0)
-            {
-                Console.WriteLine("Heal amount cannot be negative.");
-                return;
-            }
-
-            CurrentHealth += hp;
-            if (CurrentHealth > MaxHealth)
-            {
-                CurrentHealth = MaxHealth;
-            }
-        }
-
-        public HealthSystem(int maxHealth)
-        {
-            if(maxHealth <= 0)
-            {
-                Console.WriteLine("Max health must be greater than zero.");
-            }
-            MaxHealth = maxHealth;
-            CurrentHealth = MaxHealth;
-        }
-    }
-
-    class Player
-    {
-        public string Name { get; set; }
-        public HealthSystem Health { get; private set; }
-        public HealthSystem Shield { get; private set; }
-        public ConsoleColor statusColor { get; private set; }
-
-        public void TakeDamage(int damage)
-        {
-            if(damage < 0)
-            {
-                Console.WriteLine("Damage cannot be negative.");
-                return;
-            }
-
-            int shieldDamage = Math.Min(Shield.CurrentHealth, damage);
-            Shield.TakeDamage(shieldDamage);
-            int remainingDamage = damage - shieldDamage;
-            Health.TakeDamage(remainingDamage);
-        }
-
-        public string GetStatusString()
-        {
-            if (Health.CurrentHealth == 100)
-            {
-                statusColor = ConsoleColor.DarkGreen;
-                return($"{Name} is in perfect health!");
-            }
-            else if (Health.CurrentHealth >= 80)
-            {
-                statusColor = ConsoleColor.Green;
-                return ($"{Name} has minor injuries.");
-            }
-            else if (Health.CurrentHealth >= 50)
-            {
-                statusColor = ConsoleColor.Yellow;
-                return ($"{Name} is wounded.");
-            }
-            else if (Health.CurrentHealth >= 30)
-            {
-                statusColor = ConsoleColor.DarkYellow;
-                return ($"{Name} is seriously injured.");
-            }
-            else if (Health.CurrentHealth > 0)
-            {
-                statusColor = ConsoleColor.Red;
-                return ($"{Name} is critically injured!");
-            }
-            else
-            {
-                statusColor = ConsoleColor.DarkRed;
-                return ($"{Name} has fallen!");
-            }
-        }
-
-        public int GetHealth()
-        {
-            return Health.CurrentHealth;
-        }
-
-        public int GetShield()
-        {
-            return Shield.CurrentHealth;
-        }
-
-        public string GetName()
-        {
-            return Name;
-        }
-
-        public ConsoleColor GetStatusColor()
-        {
-            GetStatusString();
-            return statusColor;
-        }
-
-        public Player(string name, int health, int shield)
-        {
-            Name = name;
-            Health = new HealthSystem(health);
-            Shield = new HealthSystem(shield);
-        }
-    }
-
     internal class Program
     {
-        static string name;
-        static Random rand = new Random();
-        static bool isPlaying = true;
-        static Player player = new Player(name, 100, 50);
+        static string _name;
+        static Random _rand = new Random();
+        static bool _isPlaying = true;
+        static Player _player = new Player(_name, 100, 50);
 
         static void Main(string[] args)
         {
-            while(name == null || name == "")
+            while(_name == null || _name == "")
             {
                 GetPlayerName();
             }
 
             HUD();
 
-            while (isPlaying)
+            while (_isPlaying)
             {
                 Input();
                 HUD();
@@ -167,8 +32,8 @@ namespace HealthSystemRevisited_Roman
         static void GetPlayerName()
         {
             Console.Write("Enter player name: ");
-            name = Console.ReadLine();
-            player.Name = name;
+            _name = Console.ReadLine();
+            _player.Name = _name;
             Console.Clear();
         }
 
@@ -178,35 +43,35 @@ namespace HealthSystemRevisited_Roman
 
             if(key == ConsoleKey.D)
             {
-                int damage = rand.Next(5, 21);
-                player.TakeDamage(damage);
+                int damage = _rand.Next(1, 21);
+                _player.TakeDamage(damage);
                 Console.WriteLine();
-                Console.WriteLine($"{player.GetName()} took {damage} damage");
+                Console.WriteLine($"{_player.GetName()} took {damage} damage");
                 Console.ReadKey(true);
             }
             else if(key == ConsoleKey.H)
             {
-                int heal = rand.Next(5, 16);
-                player.Health.Heal(heal);
+                int heal = _rand.Next(1, 21);
+                _player.Health.Heal(heal);
                 Console.WriteLine();
-                Console.WriteLine($"{player.GetName()} healed {heal} health");
+                Console.WriteLine($"{_player.GetName()} healed {heal} health");
                 Console.ReadKey(true);
             }
             else if(key == ConsoleKey.R)
             {
-                player.Health.Reset();
-                player.Shield.Reset();
+                _player.Health.Reset();
+                _player.Shield.Reset();
                 Console.WriteLine();
-                Console.WriteLine($"{player.GetName()}'s health and shield have been reset");
+                Console.WriteLine($"{_player.GetName()}'s health and shield have been reset");
                 Console.ReadKey(true);
             }
         }
 
         static void HUD()
         {
-            if(player.Health.CurrentHealth <= 0)
+            if(_player.Health.CurrentHealth <= 0)
             {
-                isPlaying = false;
+                _isPlaying = false;
                 Defeat();
                 return;
             }
@@ -215,13 +80,13 @@ namespace HealthSystemRevisited_Roman
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("--------------------------------------------------");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"          {player.GetName()}          ");
+            Console.WriteLine($"          {_player.GetName()}          ");
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"Health: {player.GetHealth()}   ");
+            Console.Write($"Health: {_player.GetHealth()}   ");
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.Write($"Shield: {player.GetShield()}   ");
-            Console.ForegroundColor = player.GetStatusColor();
-            Console.Write($"Status: { player.GetStatusString()}");
+            Console.Write($"Shield: {_player.GetShield()}   ");
+            Console.ForegroundColor = _player.GetStatusColor();
+            Console.Write($"Status: { _player.GetStatusString()}");
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine();
             Console.WriteLine("Press D key to Take Damage");
@@ -234,7 +99,7 @@ namespace HealthSystemRevisited_Roman
             Console.Clear();
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("--------------------------------------------------");
-            Console.WriteLine($"       {player.GetName()} has fallen!       ");
+            Console.WriteLine($"       {_player.GetName()} has fallen!       ");
             Console.WriteLine("          Game Over!       ");
             Console.ReadKey(true);
         }
