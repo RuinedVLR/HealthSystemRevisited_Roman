@@ -101,6 +101,7 @@ namespace HealthSystemRevisited_Roman
             Console.WriteLine("--------------------------------------------------");
             Console.WriteLine($"       {_player.GetName()} has fallen!       ");
             Console.WriteLine("          Game Over!       ");
+            Console.WriteLine("     Press any key to exit...       ");
             Console.ReadKey(true);
         }
     }
